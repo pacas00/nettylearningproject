@@ -1,8 +1,8 @@
 package net.petercashel.nettyCore.client;
 
-import net.petercashel.nettyCore.common.packet.IPacketBase;
-import net.petercashel.nettyCore.common.packet.Packet;
-import net.petercashel.nettyCore.common.packet.PacketRegistry;
+import net.petercashel.nettyCore.common.PacketRegistry;
+import net.petercashel.nettyCore.common.packetCore.IPacketBase;
+import net.petercashel.nettyCore.common.packetCore.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerAdapter;

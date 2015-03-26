@@ -1,5 +1,9 @@
-package net.petercashel.nettyCore.common.packet;
+package net.petercashel.nettyCore.common.packets;
 
+import net.petercashel.nettyCore.common.PacketRegistry;
+import net.petercashel.nettyCore.common.packetCore.IPacketBase;
+import net.petercashel.nettyCore.common.packetCore.Packet;
+import net.petercashel.nettyCore.common.packetCore.PacketBase;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;

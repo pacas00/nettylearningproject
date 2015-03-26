@@ -1,14 +1,19 @@
-package net.petercashel.nettyCore.common.packet;
+package net.petercashel.nettyCore.common.packets;
 
+import net.petercashel.nettyCore.common.PacketRegistry;
+import net.petercashel.nettyCore.common.packetCore.IPacketBase;
+import net.petercashel.nettyCore.common.packetCore.Packet;
+import net.petercashel.nettyCore.common.packetCore.PacketBase;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 
-public class PingPongPacket extends PacketBase implements IPacketBase {
-	public PingPongPacket() {
+public class PongPacket extends PacketBase implements IPacketBase {
+	public PongPacket() {
 	}
 
-	public static int packetID = 2;
+	public static int packetID = 1;
 	
 	@Override
 	public void pack() {
@@ -24,7 +29,9 @@ public class PingPongPacket extends PacketBase implements IPacketBase {
 
 	@Override
 	public void execute(ChannelHandlerContext ctx) {
-		System.out.println("PINGPONG!");
+		System.out.println("PONG!");
+		(PacketRegistry.pack(new PingPongPacket())).sendPacket(ctx);
+		
 		
 	}
 

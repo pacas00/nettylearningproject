@@ -4,8 +4,8 @@ package net.petercashel.nettyCore.server;
 import java.net.SocketAddress;
 import java.util.HashMap;
 
-import net.petercashel.nettyCore.common.packet.PacketRegistry;
-import net.petercashel.nettyCore.common.packet.PongPacket;
+import net.petercashel.nettyCore.common.PacketRegistry;
+import net.petercashel.nettyCore.common.packets.PongPacket;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

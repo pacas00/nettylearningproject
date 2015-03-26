@@ -2,11 +2,11 @@ package net.petercashel.nettyCore.server;
 
 import java.net.SocketAddress;
 
-import net.petercashel.nettyCore.common.packet.IPacketBase;
-import net.petercashel.nettyCore.common.packet.Packet;
-import net.petercashel.nettyCore.common.packet.PacketRegistry;
-import net.petercashel.nettyCore.common.packet.PingPacket;
-import net.petercashel.nettyCore.common.packet.PongPacket;
+import net.petercashel.nettyCore.common.PacketRegistry;
+import net.petercashel.nettyCore.common.packetCore.IPacketBase;
+import net.petercashel.nettyCore.common.packetCore.Packet;
+import net.petercashel.nettyCore.common.packets.PingPacket;
+import net.petercashel.nettyCore.common.packets.PongPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;

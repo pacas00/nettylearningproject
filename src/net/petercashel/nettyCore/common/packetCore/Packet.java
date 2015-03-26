@@ -1,4 +1,4 @@
-package net.petercashel.nettyCore.common.packet;
+package net.petercashel.nettyCore.common.packetCore;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

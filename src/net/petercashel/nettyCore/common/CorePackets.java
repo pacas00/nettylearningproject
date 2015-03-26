@@ -1,5 +1,8 @@
-package net.petercashel.nettyCore.common.packet;
+package net.petercashel.nettyCore.common;
 
+import net.petercashel.nettyCore.common.packets.PingPacket;
+import net.petercashel.nettyCore.common.packets.PingPongPacket;
+import net.petercashel.nettyCore.common.packets.PongPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 

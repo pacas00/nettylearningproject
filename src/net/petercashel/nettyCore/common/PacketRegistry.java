@@ -1,10 +1,12 @@
-package net.petercashel.nettyCore.common.packet;
+package net.petercashel.nettyCore.common;
 
 import io.netty.channel.ChannelHandlerContext;
 
 import java.util.HashMap;
 
 import net.petercashel.commonlib.threading.threadManager;
+import net.petercashel.nettyCore.common.packetCore.IPacketBase;
+import net.petercashel.nettyCore.common.packetCore.Packet;
 
 public class PacketRegistry {
 
