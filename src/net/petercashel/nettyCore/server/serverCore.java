@@ -28,7 +28,9 @@ public class serverCore {
 		PacketRegistry.setupRegistry();
 		PacketRegistry.Side = side;
 
-
+		SelfSignedCertificate ssc = new SelfSignedCertificate();
+        final SslContext sslCtx = SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
+        
 		EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
@@ -39,7 +41,8 @@ public class serverCore {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
 					ChannelPipeline p = ch.pipeline();
-					p.addLast("readTimeoutHandler", new ReadTimeoutHandler(300));
+					p.addLast("ssl", sslCtx.newHandler(ch.alloc()));
+					p.addLast("readTimeoutHandler", new ReadTimeoutHandler(30));
 					p.addLast("InboundOutboundServerHandler", new ServerConnectionHandler());
 				}
 			})

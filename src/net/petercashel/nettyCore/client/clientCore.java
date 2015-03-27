@@ -16,18 +16,20 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 
 public class clientCore {
 
 	static final boolean SSL = System.getProperty("ssl") != null;
 	private static Channel connection;
 	static final int side = 1;
-	static String _host;
+	static String _host = "";
 	static int _port = 0;
 
-	public static void initaliseConnection () throws Exception{
+	private static void initaliseConnection() throws Exception{
 		initaliseConnection(_host, _port);
 	}
 
@@ -36,6 +38,8 @@ public class clientCore {
 		_port = port;
 		PacketRegistry.setupRegistry();
 		PacketRegistry.Side = side;
+		
+		final SslContext sslCtx = SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
 		
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {
@@ -46,6 +50,9 @@ public class clientCore {
 				@Override
 				protected void initChannel(SocketChannel ch) throws Exception {
 					ChannelPipeline p = ch.pipeline();
+					
+					p.addLast("ssl", sslCtx.newHandler(ch.alloc(), addr, port));
+					p.addLast("readTimeoutHandler", new ReadTimeoutHandler(30));
 					p.addLast("InboundOutboundClientHandler", new ClientConnectionHander());
 				}
 			});
