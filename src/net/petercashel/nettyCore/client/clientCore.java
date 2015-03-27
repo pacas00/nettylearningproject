@@ -6,6 +6,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import net.petercashel.commonlib.threading.threadManager;
 import net.petercashel.nettyCore.common.PacketRegistry;
 import net.petercashel.nettyCore.common.packets.PingPacket;
 import io.netty.bootstrap.Bootstrap;
@@ -21,15 +22,18 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 public class clientCore {
 
 	static final boolean SSL = System.getProperty("ssl") != null;
-	public static Channel connection;
+	private static Channel connection;
 	static final int side = 1;
+	static String _host;
+	static int _port = 0;
 
 	public static void initaliseConnection () throws Exception{
-		initaliseConnection("127.0.0.1", 8009);
+		initaliseConnection(_host, _port);
 	}
 
 	public static void initaliseConnection (final String addr, final int port) throws Exception {
-
+		_host = addr;
+		_port = port;
 		PacketRegistry.setupRegistry();
 		PacketRegistry.Side = side;
 		
@@ -67,5 +71,27 @@ public class clientCore {
 			group.shutdownGracefully();
 		}
 
+	}
+	
+	
+	public static Channel getChannel() {
+		//Check if closed, if so, check if host/port are set, if so, reconnect
+		if (!connection.isActive()) {
+			if (_host != null && _port != 0) {
+				threadManager.getInstance().addRunnable(
+				new Runnable() {
+					@Override
+					public void run() {
+						try {
+							clientCore.initaliseConnection();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		}
+		return connection;
 	}
 }

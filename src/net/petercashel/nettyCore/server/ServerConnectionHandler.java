@@ -13,6 +13,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.util.ReferenceCountUtil;
 
 
@@ -49,9 +50,16 @@ public class ServerConnectionHandler extends ChannelHandlerAdapter {
         	Packet p = new Packet(buf.readInt(), buf.readBytes(Packet.packetBufSize));
             PacketRegistry.unpackExecute(p, ctx); 
         }
-		
-		
     }
 
+	@Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+            throws Exception {
+        if (cause instanceof ReadTimeoutException) {
+            // do something
+        } else {
+            super.exceptionCaught(ctx, cause);
+        }
+    }
 
 }

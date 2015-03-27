@@ -13,6 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 
 public class serverCore {
 
@@ -38,6 +39,7 @@ public class serverCore {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
 					ChannelPipeline p = ch.pipeline();
+					p.addLast("readTimeoutHandler", new ReadTimeoutHandler(300));
 					p.addLast("InboundOutboundServerHandler", new ServerConnectionHandler());
 				}
 			})
