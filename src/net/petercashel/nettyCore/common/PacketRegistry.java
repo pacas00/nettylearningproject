@@ -10,7 +10,7 @@ import net.petercashel.nettyCore.common.packetCore.Packet;
 
 public class PacketRegistry {
 
-	private static volatile HashMap<Integer,Class<? extends IPacketBase>> packets = new HashMap<Integer,Class<? extends IPacketBase>>();
+	private static volatile HashMap<Integer,Class<? extends IPacketBase>> packets;
 
 	public static synchronized int registerPacket(Class<? extends IPacketBase> clazz ) {
 		int id = (packets.size() + 1);
@@ -28,6 +28,7 @@ public class PacketRegistry {
 	public static void setupRegistry() {
 		if (setup) return;
 		setup = true;
+		packets = new HashMap<Integer,Class<? extends IPacketBase>>();
 		CorePackets.registerCorePackets();
 		threadMan = new threadManager();
 	}
@@ -83,6 +84,13 @@ public class PacketRegistry {
 		if (Side == 0) return 1;
 		if (Side == 1) return 0;
 		return 2;
+	}
+
+	public static void shutdown() {
+		threadMan.shutdown();
+		packets = null;
+		setup = false;
+		
 	}
 
 

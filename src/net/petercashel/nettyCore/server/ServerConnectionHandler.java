@@ -56,7 +56,7 @@ public class ServerConnectionHandler extends ChannelHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
         if (cause instanceof ReadTimeoutException) {
-            // do something
+            System.out.println("Connection Closed: " + ctx.channel().remoteAddress().toString());
         } else {
             super.exceptionCaught(ctx, cause);
         }

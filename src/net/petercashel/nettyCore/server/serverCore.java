@@ -4,14 +4,18 @@ package net.petercashel.nettyCore.server;
 import java.net.SocketAddress;
 import java.util.HashMap;
 
+import javax.net.ssl.SSLEngine;
+
 import net.petercashel.nettyCore.common.PacketRegistry;
 import net.petercashel.nettyCore.common.packets.PongPacket;
+import net.petercashel.nettyCore.ssl.SSLContextProvider;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
@@ -27,10 +31,8 @@ public class serverCore {
 
 		PacketRegistry.setupRegistry();
 		PacketRegistry.Side = side;
-
-		SelfSignedCertificate ssc = new SelfSignedCertificate();
-        final SslContext sslCtx = SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
-        
+		SSLContextProvider.SetupSSL();
+		
 		EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
@@ -41,13 +43,14 @@ public class serverCore {
 				@Override
 				public void initChannel(SocketChannel ch) throws Exception {
 					ChannelPipeline p = ch.pipeline();
-					p.addLast("ssl", sslCtx.newHandler(ch.alloc()));
 					p.addLast("readTimeoutHandler", new ReadTimeoutHandler(30));
+					//p.addLast("ssl", sslCtx.newHandler(ch.alloc()));
+					p.addLast("ssl", getSSLHandler());
 					p.addLast("InboundOutboundServerHandler", new ServerConnectionHandler());
 				}
 			})
 			.option(ChannelOption.SO_BACKLOG, 128)          // (5)
-			.childOption(ChannelOption.SO_KEEPALIVE, true)
+			//.childOption(ChannelOption.SO_KEEPALIVE, true)
 			.childOption(ChannelOption.TCP_NODELAY, true); // (6)
 			
 
@@ -66,5 +69,14 @@ public class serverCore {
 			bossGroup.shutdownGracefully();
 		}
 
+	}
+	
+	public static SslHandler getSSLHandler() {
+		final SSLEngine sslEngine = SSLContextProvider.get().createSSLEngine();
+		sslEngine.setUseClientMode(false);
+		sslEngine.setNeedClientAuth(false);
+		final SslHandler sslHandler = new SslHandler(sslEngine);
+		
+		return sslHandler;
 	}
 }

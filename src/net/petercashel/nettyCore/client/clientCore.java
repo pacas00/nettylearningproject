@@ -6,9 +6,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLEngine;
+
 import net.petercashel.commonlib.threading.threadManager;
 import net.petercashel.nettyCore.common.PacketRegistry;
 import net.petercashel.nettyCore.common.packets.PingPacket;
+import net.petercashel.nettyCore.ssl.SSLContextProvider;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -39,7 +42,7 @@ public class clientCore {
 		PacketRegistry.setupRegistry();
 		PacketRegistry.Side = side;
 		
-		final SslContext sslCtx = SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
+		SSLContextProvider.SetupSSL();
 		
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {
@@ -50,9 +53,9 @@ public class clientCore {
 				@Override
 				protected void initChannel(SocketChannel ch) throws Exception {
 					ChannelPipeline p = ch.pipeline();
-					
-					p.addLast("ssl", sslCtx.newHandler(ch.alloc(), addr, port));
 					p.addLast("readTimeoutHandler", new ReadTimeoutHandler(30));
+					
+					p.addLast("ssl", getClientSSLHandler(addr, port));
 					p.addLast("InboundOutboundClientHandler", new ClientConnectionHander());
 				}
 			});
@@ -82,23 +85,14 @@ public class clientCore {
 	
 	
 	public static Channel getChannel() {
-		//Check if closed, if so, check if host/port are set, if so, reconnect
-		if (!connection.isActive()) {
-			if (_host != null && _port != 0) {
-				threadManager.getInstance().addRunnable(
-				new Runnable() {
-					@Override
-					public void run() {
-						try {
-							clientCore.initaliseConnection();
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				});
-			}
-		}
 		return connection;
 	}
+	
+	public static SslHandler getClientSSLHandler(final String addr, final int port) {
+		final SSLEngine sslEngine = SSLContextProvider.get().createSSLEngine(addr, port);
+		sslEngine.setUseClientMode(true);
+		final SslHandler sslHandler = new SslHandler(sslEngine);
+		return sslHandler;
+	}
+
 }
